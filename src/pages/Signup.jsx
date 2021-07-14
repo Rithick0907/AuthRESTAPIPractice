@@ -1,10 +1,12 @@
 import * as Yup from "yup";
 
 import { CustomForm, Input, SubmitButton } from "../components/form";
+import { instance, signupURL } from "../services/httpConfig";
 
 import { Link } from "react-router-dom";
 import { StyledLogin } from "./styles";
 import { passwordValidation } from "../validate";
+import { toast } from "react-toastify";
 
 const initialValues = {
   email: "",
@@ -25,9 +27,25 @@ const validationSchema = Yup.object().shape({
 });
 const Signup = () => {
   const handleSubmit = async (val, { isSubmitting, resetForm }) => {
-    console.log(val);
-    isSubmitting(false);
-    resetForm();
+    const { email, password } = val;
+    try {
+      const response = await instance({
+        url: signupURL,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          email,
+          password,
+          returnSecureToken: true,
+        },
+      });
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+      resetForm();
+    }
   };
   return (
     <StyledLogin>
@@ -51,7 +69,7 @@ const Signup = () => {
           className="mt-4"
         />
         <div className="text-center mt-4">
-          <SubmitButton type="submit" title="Login" />
+          <SubmitButton type="submit" title="Register" />
           <Link to="login" className="d-block mt-3">
             Already have an account
           </Link>
