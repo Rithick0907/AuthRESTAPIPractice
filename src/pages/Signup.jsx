@@ -29,7 +29,7 @@ const Signup = () => {
   const handleSubmit = async (val, { isSubmitting, resetForm }) => {
     const { email, password } = val;
     try {
-      const response = await instance({
+      const response = await instance.request({
         url: signupURL,
         method: "POST",
         headers: {
@@ -41,9 +41,18 @@ const Signup = () => {
           returnSecureToken: true,
         },
       });
-      console.log(response);
+      toast.success("SUCCESS");
     } catch (e) {
-      console.log(e);
+      let errorMessage = "Something went wrong";
+      if (
+        e.response &&
+        e.response.data &&
+        e.response.data.error &&
+        e.response.data.error.message
+      ) {
+        errorMessage = e.response.data.error.message;
+      }
+      toast.error(errorMessage);
       resetForm();
     }
   };
