@@ -1,10 +1,14 @@
 import * as Yup from "yup";
 
 import { CustomForm, Input, SubmitButton } from "../components/form";
+import { instance, loginURL } from "../services/httpConfig";
 
 import { Link } from "react-router-dom";
 import { StyledLogin } from "./styles";
+import UserContext from "../contexts/UserContext";
 import { passwordValidation } from "../validate";
+import { toast } from "react-toastify";
+import { useContext } from "react";
 
 const initialValues = {
   email: "",
@@ -19,10 +23,37 @@ const validationSchema = Yup.object().shape({
     .label("Password"),
 });
 const Login = () => {
+  const userContext = useContext(UserContext);
+
   const handleSubmit = async (val, { isSubmitting, resetForm }) => {
-    console.log(val);
-    isSubmitting(false);
-    resetForm();
+    const { email, password } = val;
+    try {
+      const { data } = await instance({
+        url: loginURL,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          email,
+          password,
+          returnSecureToken: true,
+        },
+      });
+      userContext.loginHandler(data.idToken);
+    } catch (e) {
+      let errorMessage = "Something went wrong";
+      if (
+        e.response &&
+        e.response.data &&
+        e.response.data.error &&
+        e.response.data.error.message
+      ) {
+        errorMessage = e.response.data.error.message;
+      }
+      toast.error(errorMessage);
+      resetForm();
+    }
   };
   return (
     <StyledLogin>

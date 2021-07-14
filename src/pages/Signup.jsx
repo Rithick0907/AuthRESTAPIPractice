@@ -5,8 +5,10 @@ import { instance, signupURL } from "../services/httpConfig";
 
 import { Link } from "react-router-dom";
 import { StyledLogin } from "./styles";
+import UserContext from "../contexts/UserContext";
 import { passwordValidation } from "../validate";
 import { toast } from "react-toastify";
+import { useContext } from "react";
 
 const initialValues = {
   email: "",
@@ -26,10 +28,11 @@ const validationSchema = Yup.object().shape({
   ),
 });
 const Signup = () => {
+  const userContext = useContext(UserContext);
   const handleSubmit = async (val, { isSubmitting, resetForm }) => {
     const { email, password } = val;
     try {
-      const response = await instance.request({
+      const { data } = await instance({
         url: signupURL,
         method: "POST",
         headers: {
@@ -41,7 +44,7 @@ const Signup = () => {
           returnSecureToken: true,
         },
       });
-      toast.success("SUCCESS");
+      userContext.loginHandler(data.idToken);
     } catch (e) {
       let errorMessage = "Something went wrong";
       if (
