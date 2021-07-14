@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Nav, Navbar } from "react-bootstrap";
 
 import { NavLink } from "react-router-dom";
 import { StyledNavbar } from "./styles";
@@ -17,8 +17,20 @@ const CustomNavbar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
             {!isLoggedIn && <NavLink to="/login">Login</NavLink>}
-            {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
-            {isLoggedIn && <NavLink to="/logout">Logout</NavLink>}
+            {isLoggedIn && (
+              <NavLink to="/profile" className="mt-2">
+                Profile
+              </NavLink>
+            )}
+            {isLoggedIn && (
+              <Button
+                onClick={userContext.logoutHandler}
+                variant="outline-danger"
+                className="ml-3"
+              >
+                Logout
+              </Button>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
